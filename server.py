@@ -136,7 +136,10 @@ This subscription was submitted via the Zynch.ai blog page.
             msg = MIMEMultipart()
             msg['From'] = formataddr((str(Header('Zynch.ai Website', 'utf-8')), SMTP_USERNAME))
             msg['To'] = TO_EMAIL
+            msg['Reply-To'] = formataddr((str(Header('Blog Subscriber', 'utf-8')), email))
             msg['Subject'] = Header('New Newsletter Subscription - Zynch.ai Blog', 'utf-8')
+            msg['X-Priority'] = '3'
+            msg['X-Mailer'] = 'Zynch.ai Blog'
             msg['Message-ID'] = make_msgid(domain='zynch.ai')
             msg.attach(MIMEText(body, 'plain', 'utf-8'))
             
