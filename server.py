@@ -2,7 +2,10 @@ from flask import Flask, request, jsonify
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.header import Header
+from email.utils import formataddr, make_msgid
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -11,7 +14,6 @@ SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
 SMTP_USERNAME = os.environ.get('SMTP_USERNAME', '')
 SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
-FROM_EMAIL = os.environ.get('FROM_EMAIL', 'info@zynch.ai')
 TO_EMAIL = os.environ.get('TO_EMAIL', 'info@zynch.ai')
 
 @app.route('/api/contact', methods=['POST'])
@@ -20,45 +22,74 @@ def handle_contact():
         data = request.get_json()
         form_type = data.get('formType', 'message')
         
-        # Build email subject
-        subject = f"New {form_type.title()} Request from {data.get('firstName', '')} {data.get('lastName', '')}"
+        # Get submitter's info
+        submitter_name = f"{data.get('firstName', '')} {data.get('lastName', '')}".strip()
+        submitter_email = data.get('email', '')
         
-        # Build email body
-        body = f"""
-New {form_type.title()} Form Submission
-========================================
+        # Build email subject
+        subject = f"Website Contact: {submitter_name} - {data.get('subject', form_type.title())}"
+        
+        # Build email body with clear formatting
+        body = f"""ZYNCH.AI WEBSITE CONTACT FORM
+{'='*50}
 
-Contact Information:
-- Name: {data.get('firstName', '')} {data.get('lastName', '')}
-- Email: {data.get('email', '')}
-- Phone: {data.get('phone', 'Not provided')}
-- Company: {data.get('company', 'Not provided')}
-- Job Title: {data.get('jobTitle', 'Not provided')}
-
+Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 Form Type: {form_type.title()}
+
+CONTACTOR INFORMATION
+--------------------
+Name: {submitter_name}
+Email: {submitter_email}
+Phone: {data.get('phone', 'Not provided')}
+Company: {data.get('company', 'Not provided')}
+Job Title: {data.get('jobTitle', 'Not provided')}
 
 """
         
         if form_type == 'message':
-            body += f"Subject: {data.get('subject', 'Not specified')}\n\nMessage:\n{data.get('message', '')}"
+            body += f"""MESSAGE DETAILS
+--------------
+Subject: {data.get('subject', 'Not specified')}
+
+Message:
+{data.get('message', 'No message provided')}
+
+"""
         else:
-            body += f"Company Size: {data.get('companySize', 'Not specified')}\n"
-            body += f"Meeting Type: {data.get('meetingType', 'Not specified')}\n"
-            body += f"Preferred Date: {data.get('preferredDate', 'Not specified')}\n"
-            body += f"Message: {data.get('message', '')}"
+            body += f"""MEETING REQUEST
+--------------
+Company Size: {data.get('companySize', 'Not specified')}
+Meeting Type: {data.get('meetingType', 'Not specified')}
+Preferred Date: {data.get('preferredDate', 'Not specified')}
+Additional Notes: {data.get('message', 'None')}
+
+"""
         
-        # Send email via SMTP
+        body += """---
+This email was sent from the Zynch.ai website contact form.
+To reply to this inquiry, click Reply (the sender is the system email).
+"""
+        
+        # Send email via SMTP with proper headers
         if SMTP_USERNAME and SMTP_PASSWORD:
             msg = MIMEMultipart()
-            msg['From'] = SMTP_USERNAME  # Use authenticated email as From
+            msg['From'] = formataddr((str(Header('Zynch.ai Website', 'utf-8')), SMTP_USERNAME))
             msg['To'] = TO_EMAIL
-            msg['Subject'] = subject
-            msg.attach(MIMEText(body, 'plain'))
+            msg['Reply-To'] = formataddr((str(Header(submitter_name, 'utf-8')), submitter_email))
+            msg['Subject'] = Header(subject, 'utf-8')
+            msg['X-Priority'] = '1'
+            msg['X-Mailer'] = 'Zynch.ai Contact Form'
             
+            # Add unique Message-ID to prevent threading/archiving issues
+            msg['Message-ID'] = make_msgid(domain='zynch.ai')
+            
+            msg.attach(MIMEText(body, 'plain', 'utf-8'))
+            
+            # Send with separate Envelope from for proper delivery
             with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
                 server.starttls()
                 server.login(SMTP_USERNAME, SMTP_PASSWORD)
-                server.send_message(msg)
+                server.sendmail(SMTP_USERNAME, [TO_EMAIL], msg.as_string())
             
             return jsonify({'success': True, 'message': 'Email sent successfully'}), 200
         else:
