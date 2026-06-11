@@ -112,6 +112,47 @@ To reply to this inquiry, click Reply (the sender is the system email).
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/newsletter', methods=['POST'])
+def handle_newsletter():
+    try:
+        data = request.get_json()
+        email = data.get('email', '')
+        
+        if not email:
+            return jsonify({'success': False, 'error': 'Email required'}), 400
+        
+        body = f"""ZYNCH.AI NEWSLETTER SUBSCRIPTION
+{'='*50}
+
+Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+New subscriber email: {email}
+
+---
+This subscription was submitted via the Zynch.ai blog page.
+"""
+        
+        if SMTP_USERNAME and SMTP_PASSWORD:
+            msg = MIMEMultipart()
+            msg['From'] = formataddr((str(Header('Zynch.ai Website', 'utf-8')), SMTP_USERNAME))
+            msg['To'] = TO_EMAIL
+            msg['Subject'] = Header('New Newsletter Subscription - Zynch.ai Blog', 'utf-8')
+            msg['Message-ID'] = make_msgid(domain='zynch.ai')
+            msg.attach(MIMEText(body, 'plain', 'utf-8'))
+            
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                server.sendmail(SMTP_USERNAME, [TO_EMAIL], msg.as_string())
+            
+            return jsonify({'success': True, 'message': 'Subscribed successfully'}), 200
+        else:
+            print(f"Newsletter subscription: {email}")
+            return jsonify({'success': True, 'message': 'Subscribed successfully'}), 200
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', '8000'))
     app.run(host='0.0.0.0', port=port)

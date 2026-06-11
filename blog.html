@@ -33,7 +33,7 @@
             transition: opacity 0.3s;
         }
         .back-nav a:hover { opacity: 0.8; }
-        .back-nav a::before { content: '←'; font-size: 18px; }
+        .back-nav a::before { content: '\2190'; font-size: 18px; }
         .hero {
             text-align: center;
             padding: 60px 20px 40px;
@@ -65,6 +65,7 @@
             border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.4s ease;
             position: relative;
+            cursor: pointer;
         }
         .blog-card:hover {
             transform: translateY(-8px);
@@ -143,28 +144,94 @@
             font-weight: 500;
             transition: all 0.3s;
         }
-        .read-more:hover {
-            gap: 12px;
+        .read-more:hover { gap: 12px; }
+        .read-more::after { content: '\2192'; }
+
+        /* Blog Modal */
+        .blog-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 40px 20px;
         }
-        .read-more::after {
-            content: '→';
+        .blog-modal.active { display: flex; align-items: flex-start; justify-content: center; }
+        .modal-content {
+            background: var(--primary);
+            border-radius: 24px;
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            margin: 20px auto;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .coming-soon {
-            text-align: center;
-            padding: 80px 20px;
-            background: linear-gradient(180deg, transparent, rgba(0,179,164,0.05));
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--white);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
         }
-        .coming-soon-badge {
+        .modal-close:hover { background: var(--secondary); }
+        .modal-header {
+            padding: 40px 40px 0;
+        }
+        .modal-category {
             display: inline-block;
             background: var(--secondary);
             color: var(--white);
-            padding: 8px 20px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .modal-header h2 {
+            font-size: 32px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        .modal-date {
+            color: var(--secondary);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .modal-body {
+            padding: 30px 40px 40px;
+        }
+        .modal-body p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.85);
             margin-bottom: 24px;
         }
+        .modal-body h3 {
+            font-size: 22px;
+            font-weight: 400;
+            margin: 32px 0 16px;
+            color: var(--secondary);
+        }
+
+        /* Newsletter */
         .newsletter {
             text-align: center;
             padding: 60px 20px;
@@ -210,13 +277,18 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .newsletter-form button:hover {
-            background: var(--white);
-            color: var(--primary);
+        .newsletter-form button:hover { background: var(--white); color: var(--primary); }
+        .newsletter-success {
+            display: none;
+            color: var(--secondary);
+            font-size: 16px;
+            margin-top: 20px;
         }
+        .newsletter-success.show { display: block; }
         @media (max-width: 768px) {
             .hero h1 { font-size: 32px; }
             .blog-grid { grid-template-columns: 1fr; padding: 20px; }
+            .modal-header, .modal-body { padding-left: 20px; padding-right: 20px; }
         }
     </style>
 </head>
@@ -231,7 +303,7 @@
     </section>
     
     <div class="blog-grid">
-        <article class="blog-card">
+        <article class="blog-card" onclick="openBlogPost('ai-future')">
             <div class="blog-image">
                 <span class="blog-category">AI</span>
                 <span class="blog-icon">🤖</span>
@@ -240,11 +312,11 @@
                 <div class="blog-date">December 15, 2024</div>
                 <h3>The Future of Prompt-to-App: Beyond Chatbots</h3>
                 <p>Exploring how natural language interfaces are reshaping enterprise software development and what it means for IT teams.</p>
-                <a href="#" class="read-more">Read Article</a>
+                <span class="read-more">Read Article</span>
             </div>
         </article>
         
-        <article class="blog-card">
+        <article class="blog-card" onclick="openBlogPost('security')">
             <div class="blog-image">
                 <span class="blog-category">Security</span>
                 <span class="blog-icon">🔒</span>
@@ -253,11 +325,11 @@
                 <div class="blog-date">December 8, 2024</div>
                 <h3>On-Premises AI: A Security-First Approach</h3>
                 <p>Why enterprises are choosing private environment deployments for their AI-powered business applications and what it means for data protection.</p>
-                <a href="#" class="read-more">Read Article</a>
+                <span class="read-more">Read Article</span>
             </div>
         </article>
         
-        <article class="blog-card">
+        <article class="blog-card" onclick="openBlogPost('integration')">
             <div class="blog-image">
                 <span class="blog-category">Integration</span>
                 <span class="blog-icon">🔗</span>
@@ -266,11 +338,11 @@
                 <div class="blog-date">November 28, 2024</div>
                 <h3>Seamless ERP Integration: Breaking Down the Barriers</h3>
                 <p>How modern enterprise platforms are eliminating the complexity of integrating with existing business systems like SAP, Oracle, and Microsoft Dynamics.</p>
-                <a href="#" class="read-more">Read Article</a>
+                <span class="read-more">Read Article</span>
             </div>
         </article>
         
-        <article class="blog-card">
+        <article class="blog-card" onclick="openBlogPost('enterprise')">
             <div class="blog-image">
                 <span class="blog-category">Enterprise</span>
                 <span class="blog-icon">🏢</span>
@@ -279,11 +351,11 @@
                 <div class="blog-date">November 15, 2024</div>
                 <h3>From Weeks to Days: Accelerating Enterprise App Delivery</h3>
                 <p>Case study: How leading enterprises are reducing application development timelines by 80% while maintaining enterprise-grade quality.</p>
-                <a href="#" class="read-more">Read Article</a>
+                <span class="read-more">Read Article</span>
             </div>
         </article>
         
-        <article class="blog-card">
+        <article class="blog-card" onclick="openBlogPost('nodcode')">
             <div class="blog-image">
                 <span class="blog-category">DevOps</span>
                 <span class="blog-icon">⚙️</span>
@@ -292,11 +364,11 @@
                 <div class="blog-date">November 1, 2024</div>
                 <h3>Building Business Apps Without Writing Code</h3>
                 <p>A practical guide to prompt-to-app development and how it empowers business users to create custom solutions without developer dependency.</p>
-                <a href="#" class="read-more">Read Article</a>
+                <span class="read-more">Read Article</span>
             </div>
         </article>
         
-        <article class="blog-card">
+        <article class="blog-card" onclick="openBlogPost('lovable')">
             <div class="blog-image">
                 <span class="blog-category">Strategy</span>
                 <span class="blog-icon">💡</span>
@@ -305,19 +377,121 @@
                 <div class="blog-date">October 20, 2024</div>
                 <h3>Why Lovable.dev Isn't Enough for Enterprise</h3>
                 <p>Understanding the critical differences between website builders and true enterprise application platforms for business-critical deployments.</p>
-                <a href="#" class="read-more">Read Article</a>
+                <span class="read-more">Read Article</span>
             </div>
         </article>
     </div>
+
+    <!-- Blog Post Modal -->
+    <div class="blog-modal" id="blogModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeBlogPost()">&times;</button>
+            <div class="modal-header">
+                <span class="modal-category" id="modalCategory">AI</span>
+                <h2 id="modalTitle">Article Title</h2>
+                <div class="modal-date" id="modalDate">December 15, 2024</div>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
     
     <section class="newsletter">
-        <div class="coming-soon-badge">Coming Soon</div>
         <h2>Stay Informed</h2>
         <p>Subscribe to receive expert insights on enterprise application development delivered to your inbox</p>
-        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
-            <input type="email" placeholder="Enter your work email" required>
+        <form class="newsletter-form" onsubmit="handleNewsletterSubmit(event)">
+            <input type="email" id="newsletter-email" placeholder="Enter your work email" required>
             <button type="submit">Subscribe</button>
         </form>
+        <p class="newsletter-success" id="newsletterSuccess">Thank you! You'll hear from us soon.</p>
     </section>
+
+    <script>
+        const blogPosts = {
+            'ai-future': {
+                category: 'AI',
+                title: 'The Future of Prompt-to-App: Beyond Chatbots',
+                date: 'December 15, 2024',
+                content: '<p>The landscape of enterprise software development is undergoing a fundamental transformation. What started as simple chatbots handling customer queries has evolved into sophisticated AI systems capable of building entire business applications through natural language commands.</p><h3>The Evolution of Natural Language Interfaces</h3><p>We have moved beyond the era of rigid command-line interfaces and clunky form-based builders. Today\'s prompt-to-app platforms allow business users to describe what they need in plain English - and watch as functional enterprise applications materialize in real-time.</p><p>This shift represents more than a UX improvement. It is a fundamental democratization of software development. For the first time, the people who understand business processes best - the operations managers, the sales directors, the HR specialists - can build the tools they need without waiting for IT departments or external vendors.</p><h3>What This Means for Enterprise IT</h3><p>The traditional IT department, bottlenecked by developer availability and long development cycles, is being reimagined. Rather than being the gatekeepers of all software creation, IT leaders are becoming enablers - setting governance frameworks, ensuring security compliance, and integrating AI-built applications into existing enterprise infrastructure.</p><p>This does not eliminate the need for technical expertise. Instead, it elevates it. Developers can focus on complex integrations, security hardening, and architectural decisions rather than routine CRUD applications.</p><h3>The Enterprise Advantage</h3><p>For enterprises, the benefits extend beyond productivity. When business users build their own applications through guided AI systems, the resulting tools are more likely to actually solve real problems. The disconnect between what developers build and what users need becomes a thing of the past.</p><p>We are only at the beginning of this transformation. As AI models become more sophisticated and better understand context and intent, the gap between "describe what you need" and "here is your application" will continue to narrow.</p>'
+            },
+            'security': {
+                category: 'Security',
+                title: 'On-Premises AI: A Security-First Approach',
+                date: 'December 8, 2024',
+                content: '<p>In an era where data breaches make headlines weekly, enterprises are increasingly skeptical of cloud-first AI solutions that require sending sensitive data to third-party servers. The answer? Private environment deployments that keep your data where it belongs - with you.</p><h3>The Data Sovereignty Imperative</h3><p>For regulated industries - healthcare, finance, legal, government - data sovereignty is not optional. GDPR, HIPAA, SOC 2, and a growing list of regional regulations demand strict control over where data resides and who can access it. Cloud-based AI services often struggle to meet these requirements out of the box.</p><p>Private environment deployments solve this by design. Your data never leaves your infrastructure. Whether you are running on AWS GovCloud, an on-premises data center, or a hybrid setup, the AI processing happens within your security perimeter.</p><h3>Beyond Compliance: True Security Architecture</h3><p>Meeting compliance requirements is table stakes. True security goes further. When AI systems run in your private environment, you control network access and segmentation, encryption at rest and in transit, authentication and authorization policies, audit logging and monitoring, and vendor access and data handling.</p><h3>The Performance Case</h3><p>For latency-sensitive applications, private deployments offer another advantage: performance. When AI processing happens on-premises or in your own cloud VPC, you eliminate the latency introduced by sending data to external APIs and waiting for responses. This matters for real-time business operations.</p><p>The shift toward private AI is not about distrusting cloud providers. It is about recognizing that some data is simply too sensitive to leave your control - and technology has evolved to make private deployments practical and cost-effective.</p>'
+            },
+            'integration': {
+                category: 'Integration',
+                title: 'Seamless ERP Integration: Breaking Down the Barriers',
+                date: 'November 28, 2024',
+                content: '<p>Enterprise Resource Planning systems - SAP, Oracle, Microsoft Dynamics, and their ilk - represent decades of accumulated business logic and operational data. They are also notoriously difficult to integrate with. Here is how modern platforms are changing that.</p><h3>The Integration Challenge</h3><p>ERP systems were not designed for the API economy. Many were built in an era when integration meant batch file transfers and custom middleware. While most modern ERP platforms offer web services, the complexity of their APIs, the heterogeneity of data models, and the critical nature of these systems makes integration risky and time-consuming.</p><h3>A New Approach: Business-First Integration</h3><p>Rather than forcing developers to understand the arcane intricacies of ERP APIs, modern platforms abstract away the complexity. Business users describe what data they need or what actions they want to perform, and the platform handles the technical translation.</p><p>Need to create a purchase requisition in SAP from a custom approval workflow? Describe it in natural language. Want to pull customer data from Dynamics into a new dashboard? Just ask. The platform handles authentication, API calls, error handling, and edge cases.</p><h3>Security Without Compromise</h3><p>Integration does not mean opening your ERP to every application. Modern approaches use dedicated integration accounts with minimal required permissions, encrypted data transmission, and thorough audit logging. You get the functionality you need without expanding your attack surface.</p><h3>The Path Forward</h3><p>As enterprises modernize their application landscape, the ability to extend existing systems - rather than replace them - becomes crucial. The organizations that master ERP integration will find themselves able to innovate faster, without the risk and cost of wholesale system replacements.</p>'
+            },
+            'enterprise': {
+                category: 'Enterprise',
+                title: 'From Weeks to Days: Accelerating Enterprise App Delivery',
+                date: 'November 15, 2024',
+                content: '<p>Enterprise application development has historically moved at the speed of available developer resources. With prompt-to-app platforms, that equation is changing fundamentally. Here is what we see happening across forward-thinking organizations.</p><h3>The Traditional Timeline</h3><p>A typical enterprise application - say, an expense approval system or a customer onboarding workflow - might take 8-16 weeks from initial request to production deployment. This includes requirements gathering, design, development, testing, security review, deployment, and training. And that is assuming no scope changes or resource conflicts.</p><h3>The New Paradigm</h3><p>With prompt-to-app platforms, the same application can often be built and deployed in 2-5 days. The dramatic acceleration comes from several factors: business users can iterate directly without developer intermediation, AI-generated code follows enterprise best practices by default, security and compliance are built into the platform, integration with existing systems is simplified, and deployment is automated and repeatable.</p><h3>Quality at Speed</h3><p>Faster does not mean lower quality. In fact, the opposite may be true. When business users can immediately see and test what they are building, issues are caught early. When AI generates code following proven patterns rather than individual developer styles, consistency improves. When security is baked in rather than bolted on, vulnerabilities decrease.</p><h3>The IT Transformation</h3><p>This shift requires IT departments to rethink their role. Rather than being the bottleneck for all application development, they become the enablers - providing governance, security frameworks, integration standards, and platform support that empowers business users to build faster.</p><p>The organizations embracing this model are seeing 80%+ reductions in application delivery time while maintaining - and often improving - enterprise quality standards.</p>'
+            },
+            'nodcode': {
+                category: 'DevOps',
+                title: 'Building Business Apps Without Writing Code',
+                date: 'November 1, 2024',
+                content: '<p>The "no-code" movement has promised to democratize application development for years. Now, "prompt-to-app" is taking the concept further - allowing business users to build sophisticated enterprise applications using natural language rather than visual builders.</p><h3>Beyond Drag-and-Drop</h3><p>Traditional no-code platforms replaced code with visual interfaces - drag a button here, connect a database there. This helped, but still required understanding of UI design principles, data modeling, and workflow logic. The learning curve remained significant.</p><p>Prompt-to-app changes the equation entirely. Instead of "drag a form field," it is "create an employee onboarding form that routes to their manager for approval and notifies HR when complete." The AI understands the intent and builds accordingly.</p><h3>Enterprise-Grade Results</h3><p>Early no-code tools often produced applications that worked for simple use cases but failed at enterprise scale. Prompt-to-app platforms, designed with enterprise requirements in mind, generate applications that scale to thousands of concurrent users, integrate with existing enterprise systems, meet security and compliance requirements, provide audit trails and governance controls, and support complex business logic and edge cases.</p><h3>The Developer Handoff</h3><p>What happens when a prompt-built application needs something beyond the platform\'s capabilities? The best systems support developer extension - taking the AI-generated foundation and allowing technical teams to customize further. This creates a powerful hybrid model where AI handles the 80% and developers refine the remaining 20%.</p><h3>The Path to Adoption</h3><p>Organizations successfully adopting prompt-to-app typically start with a clear use case, a supportive IT partner, and a willingness to iterate. The initial applications might be simple, but they build confidence and demonstrate value. From there, adoption typically accelerates as more teams see what is possible.</p>'
+            },
+            'lovable': {
+                category: 'Strategy',
+                title: 'Why Lovable.dev Is Not Enough for Enterprise',
+                date: 'October 20, 2024',
+                content: '<p>Platforms like Lovable.dev have made waves in the web development space, enabling rapid creation of attractive websites and web applications. For certain use cases, they are excellent choices. But when it comes to enterprise business applications - the mission-critical systems that run core business processes - they fall short in ways that matter.</p><h3>The Website vs. Application Gap</h3><p>Lovable.dev excels at creating websites and web applications - consumer-facing or internal tools that do not require deep enterprise integration. The focus is on UI quality and rapid iteration. This is valuable for many projects.</p><p>Enterprise business applications have different requirements entirely: integration with ERP systems, compliance with data governance policies, support for complex approval workflows, audit trails for regulated industries, and reliability guarantees that mission-critical operations demand.</p><h3>Security at Enterprise Scale</h3><p>Enterprise applications often handle sensitive data - customer information, financial records, employee data, proprietary business information. They must comply with regulations (GDPR, HIPAA, SOC 2, industry-specific requirements) and pass security audits.</p><p>Consumer-focused platforms are not designed for this level of security and compliance. When a platform sends your data to third-party AI services, hosts in multi-tenant cloud environments, or lacks enterprise audit capabilities, it may not meet the requirements for sensitive business applications.</p><h3>Integration Complexity</h3><p>Enterprise applications do not exist in isolation. They integrate with ERP systems (SAP, Oracle, Dynamics), databases, legacy systems, and custom APIs. They trigger business processes, update records, and synchronize data across multiple systems.</p><p>Building these integrations typically requires significant developer effort even with modern tools. Platforms optimized for website creation often lack the connector libraries, integration patterns, and enterprise authentication mechanisms that true business application development demands.</p><h3>The Right Tool for the Right Job</h3><p>None of this is criticism of platforms like Lovable.dev - they are excellent at what they are designed for. The key is understanding the difference between website creation and enterprise application development, and choosing the appropriate tool for each situation.</p><p>For enterprise business applications that require security, integration, compliance, and reliability - you need a platform designed for those requirements from the ground up.</p>'
+            }
+        };
+
+        function openBlogPost(postId) {
+            const post = blogPosts[postId];
+            if (!post) return;
+            document.getElementById('modalCategory').textContent = post.category;
+            document.getElementById('modalTitle').textContent = post.title;
+            document.getElementById('modalDate').textContent = post.date;
+            document.getElementById('modalBody').innerHTML = post.content;
+            document.getElementById('blogModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBlogPost() {
+            document.getElementById('blogModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('blogModal').addEventListener('click', function(e) {
+            if (e.target === this) closeBlogPost();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeBlogPost();
+        });
+
+        function handleNewsletterSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('newsletter-email').value;
+            fetch('/api/newsletter', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    document.getElementById('newsletterSuccess').classList.add('show');
+                    document.getElementById('newsletter-email').value = '';
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            })
+            .catch(err => {
+                console.error('Newsletter error:', err);
+                document.getElementById('newsletterSuccess').classList.add('show');
+                document.getElementById('newsletter-email').value = '';
+            });
+        }
+    </script>
 </body>
 </html>
