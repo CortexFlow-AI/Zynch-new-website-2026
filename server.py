@@ -6,23 +6,24 @@ import os
 
 app = Flask(__name__)
 
-# Email configuration - set these as environment variables or Azure app settings
+# Email configuration via environment variables
 SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
 SMTP_USERNAME = os.environ.get('SMTP_USERNAME', '')
 SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
-RECIPIENT_EMAIL = os.environ.get('RECIPIENT_EMAIL', 'info@zynch.ai')
+FROM_EMAIL = os.environ.get('FROM_EMAIL', 'info@zynch.ai')
+TO_EMAIL = os.environ.get('TO_EMAIL', 'info@zynch.ai')
 
 @app.route('/api/contact', methods=['POST'])
 def handle_contact():
     try:
         data = request.get_json()
+        form_type = data.get('formType', 'message')
         
-        form_type = data.get('formType', 'message')  # 'message' or 'meeting'
-        
-        # Build email content
+        # Build email subject
         subject = f"New {form_type.title()} Request from {data.get('firstName', '')} {data.get('lastName', '')}"
         
+        # Build email body
         body = f"""
 New {form_type.title()} Form Submission
 ========================================
@@ -40,17 +41,17 @@ Form Type: {form_type.title()}
         
         if form_type == 'message':
             body += f"Subject: {data.get('subject', 'Not specified')}\n\nMessage:\n{data.get('message', '')}"
-        else:  # meeting
+        else:
             body += f"Company Size: {data.get('companySize', 'Not specified')}\n"
             body += f"Meeting Type: {data.get('meetingType', 'Not specified')}\n"
             body += f"Preferred Date: {data.get('preferredDate', 'Not specified')}\n"
             body += f"Message: {data.get('message', '')}"
         
-        # Send email if SMTP is configured
+        # Send email via SMTP
         if SMTP_USERNAME and SMTP_PASSWORD:
             msg = MIMEMultipart()
-            msg['From'] = SMTP_USERNAME
-            msg['To'] = RECIPIENT_EMAIL
+            msg['From'] = FROM_EMAIL
+            msg['To'] = TO_EMAIL
             msg['Subject'] = subject
             msg.attach(MIMEText(body, 'plain'))
             
@@ -61,8 +62,7 @@ Form Type: {form_type.title()}
             
             return jsonify({'success': True, 'message': 'Email sent successfully'}), 200
         else:
-            # Log for development/debugging
-            print(f"Email would be sent to {RECIPIENT_EMAIL}:")
+            print(f"Email would be sent to {TO_EMAIL}:")
             print(subject)
             print(body)
             return jsonify({'success': True, 'message': 'Email logged (SMTP not configured)'}), 200
