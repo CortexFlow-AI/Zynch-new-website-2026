@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Zynch.ai</title>
+    <link rel="icon" href="logo-dark.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #0B1F44;
+            --secondary: #00B3A4;
+            --accent: #F0F0F0;
+            --white: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        .back-nav {
+            padding: 20px 40px;
+            background: rgba(0,0,0,0.3);
+        }
+        .back-nav a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+        .back-nav a:hover { opacity: 0.8; }
+        .back-nav a::before { content: '←'; font-size: 18px; }
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+        .hero p {
+            color: var(--secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .blog-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .blog-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--secondary);
+            box-shadow: 0 20px 40px rgba(0,179,164,0.2);
+        }
+        .blog-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .blog-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .blog-icon {
+            font-size: 60px;
+            opacity: 0.5;
+        }
+        .blog-category {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--secondary);
+            color: var(--white);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        .blog-content {
+            padding: 30px;
+        }
+        .blog-date {
+            color: var(--secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        .blog-card h3 {
+            font-size: 22px;
+            margin-bottom: 16px;
+            font-weight: 400;
+            line-height: 1.3;
+        }
+        .blog-card p {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .read-more:hover {
+            gap: 12px;
+        }
+        .read-more::after {
+            content: '→';
+        }
+        .coming-soon {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(180deg, transparent, rgba(0,179,164,0.05));
+        }
+        .coming-soon-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+        .newsletter {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(0,179,164,0.1);
+        }
+        .newsletter h2 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+        .newsletter p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 30px;
+        }
+        .newsletter-form {
+            display: flex;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .newsletter-form input {
+            flex: 1;
+            min-width: 250px;
+            padding: 14px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 30px;
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .newsletter-form input::placeholder { color: rgba(255,255,255,0.5); }
+        .newsletter-form input:focus { border-color: var(--secondary); }
+        .newsletter-form button {
+            padding: 14px 30px;
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .newsletter-form button:hover {
+            background: var(--white);
+            color: var(--primary);
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .blog-grid { grid-template-columns: 1fr; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="back-nav">
+        <a href="index.html">Back to Zynch.ai</a>
+    </nav>
+    
+    <section class="hero">
+        <h1>Insights & Updates</h1>
+        <p>Expert perspectives on enterprise application development, AI integration, and digital transformation</p>
+    </section>
+    
+    <div class="blog-grid">
+        <article class="blog-card">
+            <div class="blog-image">
+                <span class="blog-category">AI</span>
+                <span class="blog-icon">🤖</span>
+            </div>
+            <div class="blog-content">
+                <div class="blog-date">December 15, 2024</div>
+                <h3>The Future of Prompt-to-App: Beyond Chatbots</h3>
+                <p>Exploring how natural language interfaces are reshaping enterprise software development and what it means for IT teams.</p>
+                <a href="#" class="read-more">Read Article</a>
+            </div>
+        </article>
+        
+        <article class="blog-card">
+            <div class="blog-image">
+                <span class="blog-category">Security</span>
+                <span class="blog-icon">🔒</span>
+            </div>
+            <div class="blog-content">
+                <div class="blog-date">December 8, 2024</div>
+                <h3>On-Premises AI: A Security-First Approach</h3>
+                <p>Why enterprises are choosing private cloud deployments for their AI-powered business applications and what it means for data protection.</p>
+                <a href="#" class="read-more">Read Article</a>
+            </div>
+        </article>
+        
+        <article class="blog-card">
+            <div class="blog-image">
+                <span class="blog-category">Integration</span>
+                <span class="blog-icon">🔗</span>
+            </div>
+            <div class="blog-content">
+                <div class="blog-date">November 28, 2024</div>
+                <h3>Seamless ERP Integration: Breaking Down the Barriers</h3>
+                <p>How modern enterprise platforms are eliminating the complexity of integrating with existing business systems like SAP, Oracle, and Microsoft Dynamics.</p>
+                <a href="#" class="read-more">Read Article</a>
+            </div>
+        </article>
+        
+        <article class="blog-card">
+            <div class="blog-image">
+                <span class="blog-category">Enterprise</span>
+                <span class="blog-icon">🏢</span>
+            </div>
+            <div class="blog-content">
+                <div class="blog-date">November 15, 2024</div>
+                <h3>From Weeks to Days: Accelerating Enterprise App Delivery</h3>
+                <p>Case study: How leading enterprises are reducing application development timelines by 80% while maintaining enterprise-grade quality.</p>
+                <a href="#" class="read-more">Read Article</a>
+            </div>
+        </article>
+        
+        <article class="blog-card">
+            <div class="blog-image">
+                <span class="blog-category">DevOps</span>
+                <span class="blog-icon">⚙️</span>
+            </div>
+            <div class="blog-content">
+                <div class="blog-date">November 1, 2024</div>
+                <h3>Building Business Apps Without Writing Code</h3>
+                <p>A practical guide to prompt-to-app development and how it empowers business users to create custom solutions without developer dependency.</p>
+                <a href="#" class="read-more">Read Article</a>
+            </div>
+        </article>
+        
+        <article class="blog-card">
+            <div class="blog-image">
+                <span class="blog-category">Strategy</span>
+                <span class="blog-icon">💡</span>
+            </div>
+            <div class="blog-content">
+                <div class="blog-date">October 20, 2024</div>
+                <h3>Why Lovable.dev Isn't Enough for Enterprise</h3>
+                <p>Understanding the critical differences between website builders and true enterprise application platforms for business-critical deployments.</p>
+                <a href="#" class="read-more">Read Article</a>
+            </div>
+        </article>
+    </div>
+    
+    <section class="newsletter">
+        <div class="coming-soon-badge">Coming Soon</div>
+        <h2>Stay Informed</h2>
+        <p>Subscribe to receive expert insights on enterprise application development delivered to your inbox</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+            <input type="email" placeholder="Enter your work email" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </section>
+</body>
+</html>
