@@ -55,16 +55,16 @@
         }
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 40px 40px 80px;
+            padding: 40px;
         }
         .member-card {
             background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
             border-radius: 20px;
-            padding: 40px 30px;
+            padding: 30px 20px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.4s ease;
@@ -88,15 +88,15 @@
         }
         .member-card:hover::before { opacity: 1; }
         .member-avatar {
-            width: 140px;
-            height: 140px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            margin: 0 auto 24px;
+            margin: 0 auto 16px;
             background: linear-gradient(135deg, var(--secondary), var(--primary));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 28px;
             font-weight: 300;
             color: var(--white);
             border: 3px solid var(--secondary);
@@ -178,9 +178,41 @@
             color: var(--primary);
             transform: scale(1.05);
         }
+        @media (max-width: 1200px) {
+            .team-grid { 
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+                padding: 30px;
+            }
+            .member-avatar {
+                width: 90px;
+                height: 90px;
+            }
+        }
         @media (max-width: 768px) {
             .hero h1 { font-size: 32px; }
-            .team-grid { grid-template-columns: 1fr; padding: 20px; }
+            .team-grid { 
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                padding: 20px;
+            }
+            .member-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 24px;
+            }
+            .member-card h3 { font-size: 18px; }
+            .member-card .role { font-size: 12px; }
+            .member-card p { font-size: 12px; }
+        }
+        @media (max-width: 480px) {
+            .team-grid { 
+                grid-template-columns: 1fr;
+            }
+            .member-avatar {
+                width: 100px;
+                height: 100px;
+            }
         }
     </style>
 </head>
