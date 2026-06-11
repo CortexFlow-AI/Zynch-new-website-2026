@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -8,6 +8,17 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
+
+# Root route - must be first
+@app.route('/')
+def serve():
+    with open('index.html', 'r') as f:
+        return f.read()
+
+# Serve static files (html pages, images, etc)
+@app.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('.', filename)
 
 # Email configuration via environment variables
 SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
@@ -100,11 +111,6 @@ To reply to this inquiry, click Reply (the sender is the system email).
             
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/')
-def serve():
-    with open('index.html', 'r') as f:
-        return f.read()
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', '8000'))
