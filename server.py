@@ -33,7 +33,7 @@ Contact Information:
 - Email: {data.get('email', '')}
 - Phone: {data.get('phone', 'Not provided')}
 - Company: {data.get('company', 'Not provided')}
-- Title: {data.get('title', 'Not provided')}
+- Job Title: {data.get('jobTitle', 'Not provided')}
 
 Form Type: {form_type.title()}
 
@@ -50,7 +50,7 @@ Form Type: {form_type.title()}
         # Send email via SMTP
         if SMTP_USERNAME and SMTP_PASSWORD:
             msg = MIMEMultipart()
-            msg['From'] = FROM_EMAIL
+            msg['From'] = SMTP_USERNAME  # Use authenticated email as From
             msg['To'] = TO_EMAIL
             msg['Subject'] = subject
             msg.attach(MIMEText(body, 'plain'))
