@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security & Compliance | Zynch.ai</title>
+    <link rel="icon" href="logo-dark.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #0B1F44;
+            --secondary: #00B3A4;
+            --accent: #F0F0F0;
+            --white: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary);
+            color: var(--white);
+            line-height: 1.6;
+        }
+        .back-nav {
+            padding: 20px 40px;
+            background: rgba(0,0,0,0.3);
+        }
+        .back-nav a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+        .back-nav a:hover { opacity: 0.8; }
+        .back-nav a::before { content: '\2190'; font-size: 18px; }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+        .hero p {
+            color: var(--secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 40px 60px;
+        }
+        
+        .certification-section {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+            border-radius: 24px;
+            padding: 50px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 40px;
+        }
+        .certification-badge {
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+        .certification-badge img {
+            max-width: 200px;
+            height: auto;
+            filter: drop-shadow(0 10px 30px rgba(0,179,164,0.3));
+        }
+        .certification-title {
+            font-size: 32px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            color: var(--white);
+        }
+        .certification-desc {
+            font-size: 16px;
+            color: rgba(255,255,255,0.8);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .principle-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .principle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--secondary);
+        }
+        .principle-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 28px;
+        }
+        .principle-card h3 {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            color: var(--white);
+        }
+        .principle-card p {
+            font-size: 16px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.7;
+        }
+        
+        .highlight-box {
+            background: rgba(0,179,164,0.15);
+            border: 1px solid var(--secondary);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        .highlight-box h3 {
+            font-size: 22px;
+            margin-bottom: 16px;
+            color: var(--secondary);
+        }
+        .highlight-box p {
+            font-size: 16px;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin: 40px 0;
+        }
+        .key-point {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .key-point-icon {
+            font-size: 36px;
+            margin-bottom: 16px;
+        }
+        .key-point h4 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--white);
+        }
+        .key-point p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .cta-section {
+            text-align: center;
+            padding: 60px 40px;
+            background: rgba(0,179,164,0.1);
+            border-radius: 24px;
+            margin-top: 40px;
+        }
+        .cta-section h2 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+        .cta-section p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 30px;
+        }
+        .cta-btn {
+            display: inline-block;
+            padding: 16px 40px;
+            background: var(--secondary);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .cta-btn:hover {
+            background: var(--white);
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .content-wrapper { padding: 0 20px 40px; }
+            .certification-section { padding: 30px 20px; }
+            .key-points { grid-template-columns: 1fr; }
+            .principle-card { padding: 30px 20px 30px 30px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="back-nav">
+        <a href="index.html">Back to Zynch.ai</a>
+    </nav>
+    
+    <section class="hero">
+        <h1>Security & Compliance</h1>
+        <p>Enterprise-grade security built into our DNA. Your data stays where it belongs - with you.</p>
+    </section>
+    
+    <div class="content-wrapper">
+        <!-- ISO Certification -->
+        <div class="certification-section">
+            <div class="certification-badge">
+                <img src="iso-badge.png" alt="ISO 27001 Certified">
+            </div>
+            <h2 class="certification-title">ISO 27001 Certified</h2>
+            <p class="certification-desc">
+                Zynch.ai Ltd. is proud to hold ISO 27001 certification, demonstrating our commitment to the highest standards of information security management. This certification validates that our organization has implemented rigorous security controls and practices to protect your data.
+            </p>
+        </div>
+        
+        <!-- Key Security Principles -->
+        <div class="principle-card">
+            <div class="principle-icon">🔒</div>
+            <h3>Self-Hosted by Design</h3>
+            <p>
+                Zynch.ai's solution is <strong>self-hosted at the customer's site</strong>. Our platform is deployed entirely within your private environment - whether that's your on-premises data center, private cloud, or VPC. Your data never leaves your infrastructure, ensuring complete data sovereignty and compliance with regional regulations.
+            </p>
+        </div>
+        
+        <div class="principle-card">
+            <div class="principle-icon">🚫</div>
+            <h3>Zero Data Access Policy</h3>
+            <p>
+                <strong>Zynch.ai does not access, hold, or process any customer data</strong> in normal circumstances. Our architecture is designed so that all data processing occurs within your environment. We have no visibility into your business data, customer information, or operational processes.
+            </p>
+        </div>
+        
+        <div class="principle-card">
+            <div class="principle-icon">🔑</div>
+            <h3>Monitored Support Only</h3>
+            <p>
+                Data access occurs <strong>only when explicitly requested</strong> by the customer through a monitored support session. In such cases, you maintain full control and visibility - every action is logged, every access is authorized by your team, and sessions can be terminated at any time.
+            </p>
+        </div>
+        
+        <!-- Key Points Grid -->
+        <div class="key-points">
+            <div class="key-point">
+                <div class="key-point-icon">🏢</div>
+                <h4>Private Environment</h4>
+                <p>Deployed in your VPC, on-premises, or private cloud</p>
+            </div>
+            <div class="key-point">
+                <div class="key-point-icon">📊</div>
+                <h4>Data Sovereignty</h4>
+                <p>Your data never leaves your infrastructure</p>
+            </div>
+            <div class="key-point">
+                <div class="key-point-icon">🔐</div>
+                <h4>Zero Retention</h4>
+                <p>We don't store or process your business data</p>
+            </div>
+            <div class="key-point">
+                <div class="key-point-icon">👁️</div>
+                <h4>Monitored Access</h4>
+                <p>Support sessions are logged and customer-controlled</p>
+            </div>
+        </div>
+        
+        <!-- Highlight Box -->
+        <div class="highlight-box">
+            <h3>Your Data, Your Control</h3>
+            <p>
+                With Zynch.ai, you're not just buying software - you're gaining a partner committed to data security. Our self-hosted approach means your sensitive business information remains under your control at all times, subject to your security policies and compliance requirements.
+            </p>
+        </div>
+        
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>Questions about our security?</h2>
+            <p>Our team is ready to discuss our security architecture and compliance certifications with you.</p>
+            <a href="https://meetings-eu1.hubspot.com/avner-ziv" target="_blank" rel="noopener noreferrer" class="cta-btn">Schedule a Call</a>
+        </div>
+    </div>
+</body>
+</html>
