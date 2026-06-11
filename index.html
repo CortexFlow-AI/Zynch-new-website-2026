@@ -917,6 +917,23 @@ ess i<!DOCTYPE html>
             line-height: 1.4;
         }
 
+        .security-link {
+            display: inline-block;
+            color: var(--secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--secondary);
+            border-radius: 30px;
+        }
+        .security-link:hover {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
         .security-visual {
             position: relative;
             height: 350px;
@@ -2027,6 +2044,7 @@ ess i<!DOCTYPE html>
                         <span>Zero Trust Architecture</span>
                     </div>
                 </div>
+                <a href="security.html" class="security-link">Learn more about our Security & Compliance →</a>
             </div>
             <div class="security-visual">
                 <div class="shield-glow"></div>
