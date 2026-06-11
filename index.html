@@ -2538,9 +2538,26 @@
             const form = e.target;
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
-            console.log('Message submitted:', data);
-            alert('Thank you for your message! Our team will respond within 24 hours.');
-            form.reset();
+            data.formType = 'message';
+            
+            fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Thank you for your message! Our team will respond within 24 hours.');
+                    form.reset();
+                } else {
+                    alert('There was an issue. Please try again or email us directly at info@zynch.ai');
+                }
+            })
+            .catch(err => {
+                console.error('Submission error:', err);
+                alert('There was an issue. Please try again or email us directly at info@zynch.ai');
+            });
         }
 
         function handleMeetingSubmit(e) {
@@ -2548,9 +2565,26 @@
             const form = e.target;
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
-            console.log('Meeting requested:', data);
-            alert('Thank you for your meeting request! Our team will confirm your appointment shortly.');
-            form.reset();
+            data.formType = 'meeting';
+            
+            fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Thank you for your meeting request! Our team will confirm your appointment shortly.');
+                    form.reset();
+                } else {
+                    alert('There was an issue. Please try again or email us directly at info@zynch.ai');
+                }
+            })
+            .catch(err => {
+                console.error('Submission error:', err);
+                alert('There was an issue. Please try again or email us directly at info@zynch.ai');
+            });
         }
     </script>
 </body>

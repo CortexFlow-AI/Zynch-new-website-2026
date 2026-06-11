@@ -1,14 +1,80 @@
-import http.server
-import socketserver
+from flask import Flask, request, jsonify
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import os
 
-PORT = 8000
+app = Flask(__name__)
 
-class Handler(http.server.SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=os.path.dirname(os.path.abspath(__file__)), **kwargs)
+# Email configuration - set these as environment variables or Azure app settings
+SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
+SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
+SMTP_USERNAME = os.environ.get('SMTP_USERNAME', '')
+SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
+RECIPIENT_EMAIL = os.environ.get('RECIPIENT_EMAIL', 'info@zynch.ai')
+
+@app.route('/api/contact', methods=['POST'])
+def handle_contact():
+    try:
+        data = request.get_json()
+        
+        form_type = data.get('formType', 'message')  # 'message' or 'meeting'
+        
+        # Build email content
+        subject = f"New {form_type.title()} Request from {data.get('firstName', '')} {data.get('lastName', '')}"
+        
+        body = f"""
+New {form_type.title()} Form Submission
+========================================
+
+Contact Information:
+- Name: {data.get('firstName', '')} {data.get('lastName', '')}
+- Email: {data.get('email', '')}
+- Phone: {data.get('phone', 'Not provided')}
+- Company: {data.get('company', 'Not provided')}
+- Title: {data.get('title', 'Not provided')}
+
+Form Type: {form_type.title()}
+
+"""
+        
+        if form_type == 'message':
+            body += f"Subject: {data.get('subject', 'Not specified')}\n\nMessage:\n{data.get('message', '')}"
+        else:  # meeting
+            body += f"Company Size: {data.get('companySize', 'Not specified')}\n"
+            body += f"Meeting Type: {data.get('meetingType', 'Not specified')}\n"
+            body += f"Preferred Date: {data.get('preferredDate', 'Not specified')}\n"
+            body += f"Message: {data.get('message', '')}"
+        
+        # Send email if SMTP is configured
+        if SMTP_USERNAME and SMTP_PASSWORD:
+            msg = MIMEMultipart()
+            msg['From'] = SMTP_USERNAME
+            msg['To'] = RECIPIENT_EMAIL
+            msg['Subject'] = subject
+            msg.attach(MIMEText(body, 'plain'))
+            
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                server.send_message(msg)
+            
+            return jsonify({'success': True, 'message': 'Email sent successfully'}), 200
+        else:
+            # Log for development/debugging
+            print(f"Email would be sent to {RECIPIENT_EMAIL}:")
+            print(subject)
+            print(body)
+            return jsonify({'success': True, 'message': 'Email logged (SMTP not configured)'}), 200
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/')
+def serve():
+    with open('index.html', 'r') as f:
+        return f.read()
 
 if __name__ == '__main__':
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print(f"Serving at http://localhost:{PORT}")
-        httpd.serve_forever()
+    port = int(os.environ.get('PORT', '8000'))
+    app.run(host='0.0.0.0', port=port)
