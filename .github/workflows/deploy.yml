@@ -1,0 +1,78 @@
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    types: [closed]
+
+jobs:
+  deploy:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Create deployment package
+        run: |
+          zip -r deployment.zip index.html logo-dark.png logo-light.png server.py requirements.txt
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          slot-name: 'production'
+          package: './deployment.zip'
+          startup-command: 'python server.py'
+
+      - name: Upload artifact for debugging
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-files
+          path: ./deployment.zip
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate HTML
+        run: |
+          pip install beautifulsoup4 lxml
+          python -c "
+          from bs4 import BeautifulSoup
+          with open('index.html', 'r') as f:
+              soup = BeautifulSoup(f.read(), 'lxml')
+              print('✓ HTML parsed successfully')
+              print(f'  - Title: {soup.title.string if soup.title else \"No title\"}')
+              print(f'  - Scripts: {len(soup.find_all(\"script\"))}')
+              print(f'  - Styles: {len(soup.find_all(\"style\"))}')
+          "
+
+      - name: Check file sizes
+        run: |
+          echo "File sizes:"
+          ls -lh index.html logo-dark.png logo-light.png server.py requirements.txt 2>/dev/null | awk '{print "  -", $9, ":", $5}'
