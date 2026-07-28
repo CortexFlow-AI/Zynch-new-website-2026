@@ -25,7 +25,7 @@ jobs:
 
       - name: Create deployment package
         run: |
-          zip -r deployment.zip index.html logo-dark.png logo-light.png server.py requirements.txt
+          zip -r deployment.zip index.html management.html blog.html security.html logo-dark.png logo-light.png iso-badge.png server.py requirements.txt profiles
 
       - name: Login to Azure
         uses: azure/login@v2
